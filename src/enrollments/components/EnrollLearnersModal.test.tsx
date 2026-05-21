@@ -64,6 +64,9 @@ describe('EnrollLearnersModal', () => {
     expect(
       screen.getByLabelText(messages.notifyUsersCheckbox.defaultMessage)
     ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(messages.asyncProcessingCheckbox.defaultMessage)
+    ).toBeInTheDocument();
   });
 
   it('calls onClose when Cancel button is clicked', async () => {
@@ -116,6 +119,7 @@ describe('EnrollLearnersModal', () => {
       action: 'enroll',
       autoEnroll: true,
       emailStudents: true,
+      asyncProcessing: false,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),
@@ -142,6 +146,7 @@ describe('EnrollLearnersModal', () => {
       action: 'enroll',
       autoEnroll: true,
       emailStudents: true,
+      asyncProcessing: false,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),
@@ -252,6 +257,38 @@ describe('EnrollLearnersModal', () => {
       action: 'enroll',
       autoEnroll: true,
       emailStudents: true,
+      asyncProcessing: false,
+    }, {
+      onSuccess: expect.any(Function),
+      onError: expect.any(Function),
+    });
+  });
+
+  it('async processing checkbox is unchecked by default and sends asyncProcessing when checked', async () => {
+    renderComponent();
+    const asyncProcessingCheckbox = screen.getByLabelText(messages.asyncProcessingCheckbox.defaultMessage);
+    const user = userEvent.setup();
+
+    expect(asyncProcessingCheckbox).not.toBeChecked();
+
+    await user.click(asyncProcessingCheckbox);
+    expect(asyncProcessingCheckbox).toBeChecked();
+
+    const textarea = screen.getByPlaceholderText(
+      messages.userIdentifierPlaceholder.defaultMessage
+    );
+    await user.type(textarea, 'test@example.com');
+    const saveBtn = screen.getByRole('button', {
+      name: messages.saveButton.defaultMessage,
+    });
+    await user.click(saveBtn);
+
+    expect(mutateMock).toHaveBeenCalledWith({
+      identifier: ['test@example.com'],
+      action: 'enroll',
+      autoEnroll: true,
+      emailStudents: true,
+      asyncProcessing: true,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),

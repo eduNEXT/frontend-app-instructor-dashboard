@@ -21,12 +21,13 @@ const EnrollLearnersModal = ({
   const [emails, setEmails] = useState('');
   const [autoEnroll, setAutoEnroll] = useState(true);
   const [emailStudents, setEmailStudents] = useState(true);
+  const [asyncProcessing, setAsyncProcessing] = useState(false);
   const { mutate: enrollLearners } = useUpdateEnrollments(courseId);
   const { showModal, addAlert } = useAlert();
 
   const handleSave = () => {
     const identifier = emails.split(',').map(email => email.trim()).filter(email => email);
-    enrollLearners({ identifier, action: 'enroll', autoEnroll, emailStudents }, {
+    enrollLearners({ identifier, action: 'enroll', autoEnroll, emailStudents, asyncProcessing }, {
       onSuccess: (data) => {
         const failedUsernames = data.results?.filter(user => user.invalidIdentifier).map(user => user.identifier) || [];
         if (failedUsernames.length > 0) {
@@ -43,6 +44,7 @@ const EnrollLearnersModal = ({
         setEmails('');
         setAutoEnroll(true);
         setEmailStudents(true);
+        setAsyncProcessing(false);
         onClose();
       },
       onError: (error) => {
@@ -87,6 +89,13 @@ const EnrollLearnersModal = ({
               checked={emailStudents}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailStudents(e.target.checked)}
             >{intl.formatMessage(messages.notifyUsersCheckbox)}
+            </Form.Checkbox>
+            <Form.Checkbox
+              controlClassName="border-primary-500"
+              className="ml-4"
+              checked={asyncProcessing}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAsyncProcessing(e.target.checked)}
+            >{intl.formatMessage(messages.asyncProcessingCheckbox)}
             </Form.Checkbox>
           </div>
         </ModalDialog.Body>

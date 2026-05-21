@@ -19,6 +19,7 @@ export interface UpdateEnrollmentsParams {
   action: 'enroll' | 'unenroll',
   autoEnroll?: boolean,
   emailStudents?: boolean,
+  asyncProcessing?: boolean,
 }
 
 export interface UpdateBetaTestersParams {
@@ -26,6 +27,7 @@ export interface UpdateBetaTestersParams {
   action: 'add' | 'remove',
   autoEnroll?: boolean,
   emailStudents?: boolean,
+  asyncProcessing?: boolean,
 }
 
 export interface UpdateEnrollmentsResponse {

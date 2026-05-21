@@ -350,5 +350,29 @@ describe('enrollments api', () => {
         { identifier, action: 'unenroll', auto_enroll: true, email_students: true }
       );
     });
+
+    it('sends async_processing when asyncProcessing is true', async () => {
+      const courseId = 'course-v1:edX+Test+2023';
+      const identifier = ['student@example.com'];
+
+      await updateEnrollments(courseId, {
+        identifier,
+        action: 'enroll',
+        autoEnroll: true,
+        emailStudents: true,
+        asyncProcessing: true,
+      });
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith(
+        'https://test-lms.com/api/instructor/v2/courses/course-v1:edX+Test+2023/enrollments/modify',
+        {
+          identifier,
+          action: 'enroll',
+          auto_enroll: true,
+          email_students: true,
+          async_processing: true,
+        }
+      );
+    });
   });
 });

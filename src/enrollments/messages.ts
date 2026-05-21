@@ -166,6 +166,11 @@ const messages = defineMessages({
     defaultMessage: 'Notify Users by Email',
     description: 'Label for notify users by email checkbox in enroll learners modal',
   },
+  asyncProcessingCheckbox: {
+    id: 'instruct.enrollments.modals.asyncProcessingCheckbox',
+    defaultMessage: 'Process in background!',
+    description: 'Label for async processing checkbox in enroll learners and add beta testers modals',
+  },
   enrollLearnerError: {
     id: 'instruct.enrollments.modals.enrollLearnerError',
     defaultMessage: 'An error occurred while enrolling learners. Please try again.',

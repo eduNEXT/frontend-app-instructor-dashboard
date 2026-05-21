@@ -22,6 +22,7 @@ const AddBetaTestersModal = ({
   const [emails, setEmails] = useState('');
   const [autoEnroll, setAutoEnroll] = useState(true);
   const [emailStudents, setEmailStudents] = useState(true);
+  const [asyncProcessing, setAsyncProcessing] = useState(false);
   const { mutate: addBetaTesters } = useUpdateBetaTesters(courseId);
   const { showModal, addAlert } = useAlert();
   const { inputValue, handleChange } = useDebouncedFilter({
@@ -35,7 +36,7 @@ const AddBetaTestersModal = ({
 
   const handleSave = () => {
     const identifier = inputValue.split(',').map(email => email.trim()).filter(email => email);
-    addBetaTesters({ identifier, action: 'add', autoEnroll, emailStudents }, {
+    addBetaTesters({ identifier, action: 'add', autoEnroll, emailStudents, asyncProcessing }, {
       onSuccess: (data) => {
         const failedUsernames = data.results?.filter(user => user.userDoesNotExist).map(user => user.identifier) || [];
         const inactiveUsernames = data.results?.filter(user => !user.isActive && user.isActive !== null && !user.userDoesNotExist).map(user => user.identifier) || [];
@@ -64,6 +65,7 @@ const AddBetaTestersModal = ({
         handleChange('');
         setAutoEnroll(true);
         setEmailStudents(true);
+        setAsyncProcessing(false);
         onClose();
       },
       onError: (error) => {
@@ -109,6 +111,13 @@ const AddBetaTestersModal = ({
               checked={emailStudents}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailStudents(e.target.checked)}
             >{intl.formatMessage(messages.notifyUsersCheckbox)}
+            </Form.Checkbox>
+            <Form.Checkbox
+              controlClassName="border-primary-500"
+              className="ml-4"
+              checked={asyncProcessing}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAsyncProcessing(e.target.checked)}
+            >{intl.formatMessage(messages.asyncProcessingCheckbox)}
             </Form.Checkbox>
           </div>
         </ModalDialog.Body>

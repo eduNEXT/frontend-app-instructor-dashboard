@@ -74,6 +74,9 @@ describe('AddBetaTestersModal', () => {
     expect(
       screen.getByLabelText(messages.notifyUsersCheckbox.defaultMessage)
     ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(messages.asyncProcessingCheckbox.defaultMessage)
+    ).toBeInTheDocument();
   });
 
   it('calls onClose when Cancel button is clicked', async () => {
@@ -126,6 +129,7 @@ describe('AddBetaTestersModal', () => {
       action: 'add',
       autoEnroll: true,
       emailStudents: true,
+      asyncProcessing: false,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),
@@ -152,6 +156,7 @@ describe('AddBetaTestersModal', () => {
       action: 'add',
       autoEnroll: true,
       emailStudents: true,
+      asyncProcessing: false,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),
@@ -325,6 +330,7 @@ describe('AddBetaTestersModal', () => {
       action: 'add',
       autoEnroll: true,
       emailStudents: true,
+      asyncProcessing: false,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),
@@ -364,6 +370,7 @@ describe('AddBetaTestersModal', () => {
       action: 'add',
       autoEnroll: false,
       emailStudents: false,
+      asyncProcessing: false,
     }, {
       onSuccess: expect.any(Function),
       onError: expect.any(Function),
@@ -398,6 +405,38 @@ describe('AddBetaTestersModal', () => {
     await waitFor(() => expect(textarea.value).toBe(''));
     expect(autoEnrollCheckbox).toBeChecked();
     expect(notifyUsersCheckbox).toBeChecked();
+    expect(screen.getByLabelText(messages.asyncProcessingCheckbox.defaultMessage)).not.toBeChecked();
     expect(defaultProps.onClose).toHaveBeenCalled();
+  });
+
+  it('async processing checkbox is unchecked by default and sends asyncProcessing when checked', async () => {
+    renderComponent();
+    const asyncProcessingCheckbox = screen.getByLabelText(messages.asyncProcessingCheckbox.defaultMessage);
+    const user = userEvent.setup();
+
+    expect(asyncProcessingCheckbox).not.toBeChecked();
+
+    await user.click(asyncProcessingCheckbox);
+    expect(asyncProcessingCheckbox).toBeChecked();
+
+    const textarea = screen.getByPlaceholderText(
+      messages.userIdentifierPlaceholder.defaultMessage
+    );
+    await user.type(textarea, 'test@example.com');
+    const saveBtn = screen.getByRole('button', {
+      name: messages.saveButton.defaultMessage,
+    });
+    await user.click(saveBtn);
+
+    expect(mutateMock).toHaveBeenCalledWith({
+      identifier: ['test@example.com'],
+      action: 'add',
+      autoEnroll: true,
+      emailStudents: true,
+      asyncProcessing: true,
+    }, {
+      onSuccess: expect.any(Function),
+      onError: expect.any(Function),
+    });
   });
 });
